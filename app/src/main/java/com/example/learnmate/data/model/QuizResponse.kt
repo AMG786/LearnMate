@@ -1,0 +1,11 @@
+package com.example.learnmate.data.model
+
+import com.google.gson.annotations.SerializedName
+
+//data class QuizResponse(
+//    val quiz: List<QuizQuestion>
+//)
+data class QuizResponse(
+    @SerializedName("quiz")
+    val quiz: List<QuizQuestion>
+)
