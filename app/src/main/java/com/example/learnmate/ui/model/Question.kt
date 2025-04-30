@@ -1,7 +1,9 @@
 package com.example.learnmate.ui.model
 
 import java.io.Serializable
-
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 data class Question(
     val id: Long,
     val number: Int,

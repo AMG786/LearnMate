@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.learnmate.ui.model.Question
 import com.example.learnmate.R
 import com.example.learnmate.databinding.ItemQuestionBinding
-
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 class QuestionAdapter(
     private val onAnswerSelected: (Question, Int) -> Unit
 ) : ListAdapter<Question, QuestionAdapter.QuestionViewHolder>(DiffCallback()) {

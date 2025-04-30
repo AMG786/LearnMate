@@ -6,7 +6,9 @@ import androidx.room.Query
 import com.example.learnmate.data.room.entities.Interest
 import com.example.learnmate.data.room.entities.User
 
-// dao/UserDao.kt
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 @Dao
 interface UserDao {
     @Insert

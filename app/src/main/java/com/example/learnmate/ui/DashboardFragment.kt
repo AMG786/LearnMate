@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learnmate.NavigationListener
-import com.example.learnmate.R
 import com.example.learnmate.ui.model.Task
 import com.example.learnmate.ui.adapter.TaskAdapter
 import com.example.learnmate.data.repository.UserRepository

@@ -8,7 +8,9 @@ import com.example.learnmate.data.room.dao.UserDao
 import com.example.learnmate.data.room.entities.Interest
 import com.example.learnmate.data.room.entities.User
 
-// AppDatabase.kt
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 @Database(
     entities = [User::class, Interest::class],
     version = 1,

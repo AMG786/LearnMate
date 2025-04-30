@@ -1,6 +1,5 @@
 package com.example.learnmate.data.api
 
-import com.android.volley.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -11,7 +10,6 @@ Created by Abdul Mueez, 04/24/2025
  */
 object RetrofitInstance {
     private const val BASE_URL = "http://10.0.2.2:5000/" // For emulator
-    // For physical device: "http://YOUR_LOCAL_IP:5000/"
 
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

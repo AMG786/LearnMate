@@ -21,9 +21,3 @@ data class QuizQuestion(
         )
     }
 }
-//data class QuizQuestion(
-//    val question: String,
-//    val options: List<String>,
-//    @SerializedName("correct_answer")
-//    val correctAnswer: String
-//)

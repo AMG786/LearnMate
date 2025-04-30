@@ -10,9 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
-import com.example.learnmate.R
 import com.example.learnmate.data.repository.UserRepository
 import com.example.learnmate.data.room.AppDatabase
 import com.example.learnmate.databinding.FragmentLoginBinding
@@ -30,8 +28,6 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val motionLayout = view?.findViewById<MotionLayout>(R.id.motionLayout)
-//        motionLayout?.transitionToEnd()
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -115,94 +111,3 @@ class LoginFragment : Fragment() {
         _binding = null
     }
 }
-//class LoginFragment : Fragment() {
-//    private lateinit var binding: FragmentLoginBinding
-//    private val viewModel: AuthViewModel by viewModels()
-//
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        binding = FragmentLoginBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//
-//        binding.btnLogin.setOnClickListener {
-//            val username = binding.etUsername.text.toString()
-//            val password = binding.etPassword.text.toString()
-//
-//            if (username.isNotEmpty() && password.isNotEmpty()) {
-//                viewModel.login(username, password)
-//            }
-//        }
-//        viewModel.loginState.observe(viewLifecycleOwner) { user ->
-//            user?.let {
-//                // Navigate to Dashboard with user ID
-//                (activity as? NavigationListener)?.navigateToFragment(DashboardFragment())
-//            } ?: run {
-//                Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        binding.tvRegister.setOnClickListener {
-//            (activity as? NavigationListener)?.navigateToFragment(RegisterFragment())
-//        }
-//    }
-
-//    private fun validateInput(username: String, password: String): Boolean {
-//        // Add validation logic
-//        return username.isNotEmpty() && password.isNotEmpty()
-//    }
-
-//    private fun loginUser(username: String, password: String) {
-//        lifecycleScope.launch {
-//            val user = (activity?.application as? MyApp)?.userRepository?.login(username, password)
-//            user?.let {
-//                val bundle = Bundle().apply {
-//                    putInt("userId", it.id)
-//                }
-//                (activity as? NavigationListener)?.navigateToFragment(RegisterFragment())
-//            } ?: run {
-//                Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-//}
-//
-//class LoginFragment : Fragment() {
-//
-//    private lateinit var etUsername: EditText
-//    private lateinit var etPassword: EditText
-//    private lateinit var btnLogin: Button
-//    private lateinit var tvRegister: TextView
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        val view = inflater.inflate(R.layout.fragment_login, container, false)
-//
-//        etUsername = view.findViewById(R.id.et_username)
-//        etPassword = view.findViewById(R.id.et_password)
-//        btnLogin = view.findViewById(R.id.btn_login)
-//        tvRegister = view.findViewById(R.id.tv_register)
-//
-//        btnLogin.setOnClickListener {
-//            val username = etUsername.text.toString()
-//            val password = etPassword.text.toString()
-//
-//            if (username.isEmpty() || password.isEmpty()) {
-//                Toast.makeText(requireContext(), "Please enter both username and password", Toast.LENGTH_SHORT).show()
-//            } else {
-//
-//                (activity as? NavigationListener)?.navigateToFragment(DashboardFragment())
-//            }
-//        }
-//
-//        tvRegister.setOnClickListener {
-//            (activity as? NavigationListener)?.navigateToFragment(RegisterFragment())
-//        }
-//
-//        return view
-//    }
-//}

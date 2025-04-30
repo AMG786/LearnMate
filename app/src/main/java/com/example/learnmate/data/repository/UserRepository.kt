@@ -4,10 +4,12 @@ import com.example.learnmate.data.room.dao.UserDao
 import com.example.learnmate.data.room.entities.User
 import com.example.learnmate.data.room.entities.Interest
 
-// UserRepository.kt
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 class UserRepository(private val userDao: UserDao) {
-//    suspend fun registerUser(user: User): Long = userDao.insertUser(user)
-suspend fun getUser(username: String, password: String): User? {
+
+    suspend fun getUser(username: String, password: String): User? {
     return userDao.getUser(username, password)
 }
 
@@ -24,14 +26,6 @@ suspend fun getUser(username: String, password: String): User? {
     suspend fun getUserInterests(userId: Int): List<String> =
         userDao.getUserInterests(userId)
     suspend fun registerUser(user: User): Long = userDao.insertUser(user)
-//    suspend fun registerUser(user: User): Long {
-//        // Check if username already exists
-////        if (userDao.checkUsernameExists(user.username)) {
-////            return -1L
-////        }
-//        System.out.println("dasdasdasdasdsadasdasd")
-//        return userDao.insertUser(user)
-//    }
 
     suspend fun getUserById(userId: Int): User? {
         return userDao.getUserById(userId)

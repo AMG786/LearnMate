@@ -1,5 +1,7 @@
 package com.example.learnmate.ui.model
-
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 data class Task(
     val id: Long =0,
     val title: String,

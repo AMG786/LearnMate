@@ -1,7 +1,9 @@
 package com.example.learnmate.data.room.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-// entities/User.kt
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 @Entity(tableName = "users")
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Int = 1,

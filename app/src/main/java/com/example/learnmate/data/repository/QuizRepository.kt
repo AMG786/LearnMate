@@ -3,7 +3,9 @@ package com.example.learnmate.data.repository
 import com.example.learnmate.ui.model.Question
 import com.example.learnmate.Resource
 import com.example.learnmate.data.api.ApiService
-
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 class QuizRepository(private val apiService: ApiService) {
     suspend fun getQuizQuestions(topic: String): Resource<List<Question>> {
         return try {

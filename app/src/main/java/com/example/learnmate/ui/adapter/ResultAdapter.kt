@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.learnmate.R
 import com.example.learnmate.ui.model.Result
 
-
+/**
+Created by Abdul Mueez, 04/24/2025
+ */
 class ResultAdapter(
     private val results: List<Result>
 ) : RecyclerView.Adapter<ResultAdapter.ResultViewHolder>() {

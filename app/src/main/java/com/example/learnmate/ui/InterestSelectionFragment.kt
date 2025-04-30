@@ -61,7 +61,6 @@ class InterestSelectionFragment : Fragment() {
 
     private fun setupUI() {
         setupInterestButtons()
-        updateSelectionCount()
 
         binding.btnNext.setOnClickListener {
             if (selectedInterests.isNotEmpty()) {
@@ -131,12 +130,6 @@ class InterestSelectionFragment : Fragment() {
             selectedInterests.add(interest)
         }
 
-        updateSelectionCount()
-    }
-
-    private fun updateSelectionCount() {
-//        binding.tvSelectionCount.text =
-//            "Selected: ${selectedInterests.size}/$maxInterests"
     }
 
     private fun saveInterestsAndNavigate() {
