@@ -13,7 +13,7 @@ import com.example.learnmate.ui.model.Task
 Created by Abdul Mueez, 04/24/2025
  */
 class TaskAdapter(
-    private val tasks: List<Task>,
+    private var tasks: List<Task>,
     private val onTaskClicked: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
@@ -22,7 +22,10 @@ class TaskAdapter(
             .inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(view)
     }
-
+    fun updateTasks(newTasks: List<Task>) {
+        tasks = newTasks
+        notifyDataSetChanged()
+    }
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
         holder.bind(task)

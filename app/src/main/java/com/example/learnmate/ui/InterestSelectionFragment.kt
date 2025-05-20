@@ -11,9 +11,15 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.lifecycle.lifecycleScope
 import com.example.learnmate.NavigationListener
 import com.example.learnmate.R
+import com.example.learnmate.Resource
+import com.example.learnmate.data.TokenManager
+import com.example.learnmate.data.api.ApiService
+import com.example.learnmate.data.api.RetrofitInstance
+import com.example.learnmate.data.repository.InterestsRepository
 import com.example.learnmate.data.repository.UserRepository
 import com.example.learnmate.data.room.AppDatabase
 import com.example.learnmate.databinding.FragmentInterestSelectionBinding
+import com.example.learnmate.vm.InterestsViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -27,6 +33,9 @@ class InterestSelectionFragment : Fragment() {
     private val selectedInterests = mutableSetOf<String>()
     private val maxInterests = 10
     private val interestButtons = mutableListOf<AppCompatButton>()
+    private lateinit var viewModel: InterestsViewModel
+    private lateinit var authToken: String
+
 
     companion object {
         private val availableTopics = listOf(
@@ -54,11 +63,42 @@ class InterestSelectionFragment : Fragment() {
             showErrorAndNavigateBack("User not found")
             return
         }
+        authToken = TokenManager.getToken(requireContext()) ?: ""
 
         userRepository = UserRepository(AppDatabase.getDatabase(requireContext()).userDao())
-        setupUI()
-    }
+        // Initialize ViewModel
+        val api = RetrofitInstance.api
+        val userDao = AppDatabase.getDatabase(requireContext()).userDao()
+        viewModel = InterestsViewModel(InterestsRepository(api, userDao))
 
+        setupUI()
+        setupObservers()
+    }
+    private fun setupObservers() {
+        viewModel.saveState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is Resource.Loading -> {
+                    System.out.println("Show Loading")
+                }
+                is Resource.Success -> navigateToDashboard()
+                is Resource.Error -> {
+                    System.out.println("Show Error")
+                }
+            }
+        }
+    }
+//    private fun saveInterestsAndNavigate() {
+//
+//    }
+
+    private fun navigateToDashboard() {
+        val dashboardFragment = DashboardFragment().apply {
+            arguments = Bundle().apply {
+                putInt("userId", userId)
+            }
+        }
+        (activity as? NavigationListener)?.navigateToFragment(dashboardFragment)
+    }
     private fun setupUI() {
         setupInterestButtons()
 
@@ -135,6 +175,15 @@ class InterestSelectionFragment : Fragment() {
     private fun saveInterestsAndNavigate() {
         lifecycleScope.launch {
             try {
+                if (selectedInterests.isNotEmpty()) {
+                    viewModel.saveInterests(
+                        userId = userId,
+                        token = authToken,
+                        interests = selectedInterests.toList()
+                    )
+                } else {
+                    Toast.makeText(requireContext(), "Select at least 1 interest", Toast.LENGTH_SHORT).show()
+                }
                 // Save interests to database
                 userRepository.addUserInterest(userId, selectedInterests.toList())
 

@@ -1,5 +1,8 @@
 package com.example.learnmate.data.api
 
+import android.content.Context
+import com.example.learnmate.data.TokenManager
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,7 +12,7 @@ import java.util.concurrent.TimeUnit
 Created by Abdul Mueez, 04/24/2025
  */
 object RetrofitInstance {
-    private const val BASE_URL = "http://10.0.2.2:5000/" // For emulator
+    private const val BASE_URL = "http://10.0.2.2:5000/"
 
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

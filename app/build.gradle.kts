@@ -41,7 +41,16 @@ android {
 dependencies {
 
     implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.lifecycle.viewmodel.android)
     kapt ("androidx.room:room-compiler:2.6.1")
+
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
+
+    implementation ("com.google.android.gms:play-services-wallet:19.2.1")
+
+    // QR code generation
+    implementation ("com.google.zxing:core:3.5.2")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
 // Optional for coroutines
     implementation ("androidx.room:room-ktx:2.6.1")

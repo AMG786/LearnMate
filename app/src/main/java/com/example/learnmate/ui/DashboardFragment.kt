@@ -10,11 +10,17 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learnmate.NavigationListener
+import com.example.learnmate.R
+import com.example.learnmate.Resource
+import com.example.learnmate.data.TokenManager
+import com.example.learnmate.data.api.RetrofitInstance
+import com.example.learnmate.data.repository.InterestsRepository
 import com.example.learnmate.ui.model.Task
 import com.example.learnmate.ui.adapter.TaskAdapter
 import com.example.learnmate.data.repository.UserRepository
 import com.example.learnmate.data.room.AppDatabase
 import com.example.learnmate.databinding.FragmentDashboardBinding
+import com.example.learnmate.vm.DashboardViewModel1
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,6 +28,8 @@ import kotlinx.coroutines.launch
 /**
 Created by Abdul Mueez 04/16/2025
  */
+
+
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
@@ -30,6 +38,9 @@ class DashboardFragment : Fragment() {
     private val tasksList = mutableListOf<Task>()
     private lateinit var userRepository: UserRepository
     private var userId: Int = -1
+    private lateinit var authToken: String
+    private lateinit var viewModel: DashboardViewModel1
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,18 +55,103 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userId = arguments?.getInt("userId", -1) ?: -1
+        authToken = TokenManager.getToken(requireContext()) ?: ""
 
         if (userId == -1) {
             Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
-            (activity as? NavigationListener)?.navigateToFragment(LoginFragment())
-            return
+            //(activity as? NavigationListener)?.navigateToFragment(LoginFragment())
+            //return
         }
 
         userRepository = UserRepository(AppDatabase.getDatabase(requireContext()).userDao())
-
-        loadUserData()
-        loadTaskData()
+// Initialize ViewModel
+        val userRepo = UserRepository(AppDatabase.getDatabase(requireContext()).userDao())
+        val interestsRepo = InterestsRepository(
+            RetrofitInstance.api,
+            AppDatabase.getDatabase(requireContext()).userDao()
+        )
+        viewModel = DashboardViewModel1(userRepo, interestsRepo)
         setupRecyclerView()
+        setupObservers()
+        loadData()
+       // setupProfileNavigation()
+//        loadUserData()
+//        loadTaskData()
+//        setupRecyclerView()
+     navigate_to_profile(userId)
+    }
+    private fun setupRecyclerView() {
+        taskAdapter = TaskAdapter(mutableListOf()) { task ->
+            val args = Bundle().apply {
+                putString("topic", task.topic)
+            }
+            (activity as? NavigationListener)?.navigateToFragment(
+                QuizFragment().apply { arguments = args }
+            )
+        }
+
+        binding.rvTasks.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = taskAdapter
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.tasks.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> showLoading()
+                is Resource.Success -> {
+                    resource.data?.let { tasks ->
+                        taskAdapter.updateTasks(tasks)
+                        updateTaskCount(tasks)
+                    }
+                }
+                is Resource.Error -> showError(resource.message)
+            }
+        }
+    }
+
+    private fun loadData() {
+        // Load user data
+        lifecycleScope.launch {
+            val user = userRepository.getUserById(userId)
+            user?.let { binding.tvUsername.text = it.username }
+        }
+
+        // Load tasks
+        viewModel.loadTasks(userId, authToken)
+    }
+
+    private fun updateTaskCount(tasks: List<Task>) {
+        val pendingCount = tasks.count { it.status != Task.Status.COMPLETED }
+        binding.tvTasksDue.text = if (pendingCount > 0) {
+            resources.getQuantityString(
+                R.plurals.tasks_due_count,
+                pendingCount,
+                pendingCount
+            )
+        } else {
+            getString(R.string.no_tasks_due)
+        }
+    }
+
+    private fun showLoading() {
+//        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun showError(message: String?) {
+//        binding.progressBar.visibility = View.GONE
+        Toast.makeText(requireContext(), message ?: "Error", Toast.LENGTH_SHORT).show()
+    }
+    private fun navigate_to_profile(userId: Int){
+        binding.lottieAnimationView.setOnClickListener {
+            val profileFragment = ProfileFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("userId", userId)
+                }
+            }
+            (activity as? NavigationListener)?.navigateToFragment(profileFragment)
+        }
     }
 
     private fun loadUserData() {
@@ -123,30 +219,24 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    private fun setupRecyclerView() {
-
-        taskAdapter = TaskAdapter(tasksList) { task ->
-            Toast.makeText(requireContext(), "Clicked on: ${task.title}", Toast.LENGTH_SHORT).show()
-            val arg = Bundle().apply {
-                putString("topic", task.topic)
-            }
-            (activity as? NavigationListener)?.navigateToFragment(QuizFragment().apply {
-                arguments = arg
-            })
-        }
-
-        binding.rvTasks.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = taskAdapter
-//            setHasFixedSize(true) // Improves performance
+//    private fun setupRecyclerView() {
 //
-//            // Apply the layout animation
-//            val controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down)
-//            layoutAnimation = controller
-//            scheduleLayoutAnimation() // Trigger the animation
-
-        }
-    }
+//        taskAdapter = TaskAdapter(tasksList) { task ->
+//            Toast.makeText(requireContext(), "Clicked on: ${task.title}", Toast.LENGTH_SHORT).show()
+//            val arg = Bundle().apply {
+//                putString("topic", task.topic)
+//            }
+//            (activity as? NavigationListener)?.navigateToFragment(QuizFragment().apply {
+//                arguments = arg
+//            })
+//        }
+//
+//        binding.rvTasks.apply {
+//            layoutManager = LinearLayoutManager(requireContext())
+//            adapter = taskAdapter
+//
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

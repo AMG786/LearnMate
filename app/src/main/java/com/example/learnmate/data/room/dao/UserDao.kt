@@ -20,6 +20,14 @@ interface UserDao {
     @Insert
     suspend fun insertInterest(interest: Interest)
 
+    // Add this new method
+    @Insert
+    suspend fun insertInterests(interests: List<Interest>)
+
+    // Keep all existing methods
+    @Query("DELETE FROM interests WHERE userId = :userId")
+    suspend fun clearUserInterests(userId: Int)
+
     @Query("SELECT topicName FROM interests WHERE userId = :userId")
     suspend fun getUserInterests(userId: Int): List<String>
 

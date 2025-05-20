@@ -11,6 +11,7 @@ import com.example.learnmate.NavigationListener
 import com.example.learnmate.ui.model.Question
 import com.example.learnmate.ui.adapter.QuestionAdapter
 import com.example.learnmate.Resource
+import com.example.learnmate.data.TokenManager
 import com.example.learnmate.data.api.RetrofitInstance
 import com.example.learnmate.data.repository.QuizRepository
 import com.example.learnmate.databinding.FragmentQuizBinding
@@ -26,6 +27,7 @@ class QuizFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: QuizViewModel
     private lateinit var adapter: QuestionAdapter
+    private var historyId: String="6825f36a3d2b75c378dfa555";
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,14 +47,16 @@ class QuizFragment : Fragment() {
 
         val topic = arguments?.getString("topic") ?: "ANDROID DEVELOPMENT"
 
-        viewModel.fetchQuiz(topic)
+        viewModel.fetchQuiz(token = TokenManager.getToken(requireContext()) ?: "",topic)
         binding.tvTaskTitle.text = "Quiz on $topic";
         binding.tvTaskDescription.text = "Test your knowledge of $topic Hope you love it \uD83D\uDE04";
+
 
         binding.btnSubmit.setOnClickListener {
 
             adapter.currentList?.let { questions ->
                 viewModel.submitQuiz(questions)
+                viewModel.submitQuiz(historyId,questions,TokenManager.getToken(requireContext()) ?: "")
             }
 
         }
@@ -77,18 +81,31 @@ class QuizFragment : Fragment() {
         viewModel.quizState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is Resource.Loading -> showLoading()
-                is Resource.Success -> showQuestions(state.data)
+                is Resource.Success -> {
+                    state.data?.let { questions ->
+                        // Here you would set the historyId if your API returns it
+                        // viewModel.setHistoryId(questions.historyId)
+                        showQuestions(questions)
+                    } ?: showError("No questions found")
+                }
+
+                    //showQuestions(state.data)
                 is Resource.Error -> showError(state.message)
             }
+        }
+
+        // Observe historyId and set it
+        viewModel.historyId.observe(viewLifecycleOwner) { id ->
+            historyId = id // ✅ Automatically set from API response
         }
 
         viewModel.navigateToResults.observe(viewLifecycleOwner) { shouldNavigate ->
             if (shouldNavigate) {
                 val resultsFragment = ResultsFragment().apply {
                     adapter.currentList?.let { questions ->
-                    arguments = Bundle().apply {
-                        putSerializable("quizResponses", ArrayList(questions))
-                    }}
+                        arguments = Bundle().apply {
+                            putSerializable("quizResponses", ArrayList(questions))
+                        }}
                 }
                 (activity as? NavigationListener)?.navigateToFragment(resultsFragment)
                 viewModel.doneNavigating()
@@ -97,7 +114,7 @@ class QuizFragment : Fragment() {
     }
 
     private fun showLoading() {
-       binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         binding.rvQuestions.visibility = View.GONE
     }
 
@@ -110,7 +127,7 @@ class QuizFragment : Fragment() {
     }
 
     private fun showError(message: String?) {
-       binding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         binding.rvQuestions.visibility = View.GONE
     }
 

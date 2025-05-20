@@ -2,6 +2,7 @@ package com.example.learnmate.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.learnmate.NavigationListener
+import com.example.learnmate.Resource
+import com.example.learnmate.data.api.ApiService
+import com.example.learnmate.data.api.RetrofitInstance
+import com.example.learnmate.data.repository.AuthRepository
 import com.example.learnmate.data.repository.UserRepository
 import com.example.learnmate.data.room.AppDatabase
 import com.example.learnmate.data.room.entities.User
 import com.example.learnmate.databinding.FragmentRegisterBinding
+import com.example.learnmate.vm.AuthViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -22,8 +28,9 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private lateinit var userRepository: UserRepository
+    private lateinit var viewModel: AuthViewModel
+
     companion object {
-        // For database instance
         lateinit var appDatabase: AppDatabase
     }
 
@@ -42,6 +49,10 @@ class RegisterFragment : Fragment() {
         // Initialize database and repository
         appDatabase = AppDatabase.getDatabase(requireContext())
         userRepository = UserRepository(appDatabase.userDao())
+
+        viewModel = AuthViewModel(
+            repository = AuthRepository(RetrofitInstance.api, appDatabase.userDao())
+        )
 
         setupClickListeners()
     }
@@ -72,7 +83,7 @@ class RegisterFragment : Fragment() {
                     etEmail.error = "Email required"
                     false
                 }
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                     etEmail.error = "Invalid email format"
                     false
                 }
@@ -120,6 +131,7 @@ class RegisterFragment : Fragment() {
 
                     if (userId > 0) {
                         // Registration successful, navigate to interest selection
+                        viewModel.register(etUsername.text.toString(), etEmail.text.toString(), etPassword.text.toString())
                         val interestsFragment = InterestSelectionFragment().apply {
                             arguments = Bundle().apply {
                                 putInt("userId", userId.toInt())
